@@ -4,12 +4,11 @@ import (
     "github.com/spf13/viper"
 )
 
-func init() {
-    viper.SetConfigFile("../.env") // Устанавливаем имя файла конфигурации
-    viper.SetConfigType("env")  // Устанавливаем тип файла конфигурации
+func Init() {
+    viper.SetConfigFile("../.env")
+    viper.SetConfigType("env")
 
-    err := viper.ReadInConfig() // Читаем конфигурационный файл
-    if err != nil {
+    if err := viper.ReadInConfig(); err != nil {
         panic(err)
     }
 }

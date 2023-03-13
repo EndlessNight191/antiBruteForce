@@ -1,10 +1,13 @@
 package repository
 
-import "test/internal/Infrastructure/cache"
+import (
+	"test/internal/Infrastructure/cache"
+	"test/internal/domain"
+)
 
 
-func IncrementAuthAttemptsCommon(ip string, login string, password string) (int64, error) {
-    key := ip + ":" + login + ":" + password
+func IncrementAuthAttemptsCommon(request domain.IncomingRequest) (int64, error) {
+    key := joinToFormatCommon(request.IP, request.Login, request.Password)
     result, err := cache.RedisClient.Incr(key).Result()
     if err != nil {
         return 0, err
@@ -19,7 +22,7 @@ func IncrementAuthAttemptsCommon(ip string, login string, password string) (int6
 }
 
 func IncrementIp(ip string) (int64, error) {
-    key := "ip:" + ip
+    key := joinToFormatIp(ip)
     result, err := cache.RedisClient.Incr(key).Result()
     if err != nil {
         return 0, err
@@ -34,7 +37,7 @@ func IncrementIp(ip string) (int64, error) {
 }
 
 func IncrementLogin(login string) (int64, error) {
-    key := "login:" + login
+    key := joinToFormatLogin(login)
     result, err := cache.RedisClient.Incr(key).Result()
     if err != nil {
         return 0, err
@@ -49,7 +52,7 @@ func IncrementLogin(login string) (int64, error) {
 }
 
 func IncrementPassword(password string) (int64, error) {
-    key := "password:" + password
+    key := joinToFormatPassword(password)
     result, err := cache.RedisClient.Incr(key).Result()
     if err != nil {
         return 0, err
