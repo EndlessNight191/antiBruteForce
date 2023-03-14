@@ -5,3 +5,7 @@ type IncomingRequest struct {
 	Password string `json:"password" validate:"required,max=50"`
 	IP       string `json:"ip" validate:"required,max=50"`
 }
+
+type ResponseIsAccess struct {
+	IsAccess    bool `json:"isAccess"`
+}

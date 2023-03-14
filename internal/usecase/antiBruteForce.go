@@ -10,27 +10,38 @@ type isLists struct {
 	isWhite bool
 }
 
-func AllowAccess(request domain.IncomingRequest) (bool, error) {
-	
+func AllowAccess(request domain.IncomingRequest) (domain.ResponseIsAccess, error) {
+	response := domain.ResponseIsAccess{
+		IsAccess: false,
+	}
+
+	hashPassword, err := hashPassword(request.Password)
+	if err != nil {
+		return response, err
+	}
+	request.Password = hashPassword
+
 	isLists, err := checkIpInLists(request.IP)
 	if err != nil {
-		return false, err
+		return response, err
 	}
 
 	if isLists.isWhite {
-		return true, nil // есть доступ по вайт листу
+		response.IsAccess = true
+		return response, err // есть доступ по вайт листу
 	}
 
 	if isLists.isBlack {
-		return false, nil // нет доступап по блек листу
+		return response, err // нет доступа по вайт листу
 	}
 
 	isAccess, err := checkBackets(request)
 	if err != nil || !isAccess {
-		return false, err
+		return response, err
 	}
 
-	return true, nil
+	response.IsAccess = true
+	return response, nil
 }
 
 func checkIpInLists(ip string) (isLists, error) {

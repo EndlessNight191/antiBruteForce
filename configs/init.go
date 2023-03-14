@@ -1,14 +1,17 @@
 package configs
 
 import (
-    "github.com/spf13/viper"
+	"fmt"
+
+	"github.com/spf13/viper"
 )
 
-func Init() {
+func Init() error {
     viper.SetConfigFile("../.env")
     viper.SetConfigType("env")
 
     if err := viper.ReadInConfig(); err != nil {
-        panic(err)
+        return fmt.Errorf("error init config: %w", err)
     }
+    return nil
 }
