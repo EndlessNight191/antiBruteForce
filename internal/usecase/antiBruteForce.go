@@ -5,72 +5,66 @@ import (
 	"test/internal/repository"
 )
 
-type isLists struct {
+type status int
+
+const (
+	StatusBlack = status(iota)
+	StatusWhite
+	StatusNone
+)
+
+type access struct {
 	isBlack bool
 	isWhite bool
 }
 
 func AllowAccess(request domain.IncomingRequest) (domain.ResponseIsAccess, error) {
-	response := domain.ResponseIsAccess{
-		IsAccess: false,
-	}
-
 	hashPassword, err := hashPassword(request.Password)
 	if err != nil {
-		return response, err
+		return domain.ResponseIsAccess{}, err
 	}
 	request.Password = hashPassword
 
 	isLists, err := checkIpInLists(request.IP)
 	if err != nil {
-		return response, err
+		return domain.ResponseIsAccess{}, err
 	}
 
 	if isLists.isWhite {
-		response.IsAccess = true
-		return response, err // есть доступ по вайт листу
+		return domain.ResponseIsAccess{IsAccess: true}, nil // есть доступ по вайт листу
 	}
 
 	if isLists.isBlack {
-		return response, err // нет доступа по вайт листу
+		return domain.ResponseIsAccess{}, nil // нет доступа по вайт листу
 	}
 
 	isAccess, err := checkBackets(request)
 	if err != nil || !isAccess {
-		return response, err
+		return domain.ResponseIsAccess{}, err
 	}
 
-	response.IsAccess = true
-	return response, nil
+	return domain.ResponseIsAccess{IsAccess: true}, nil
 }
 
-func checkIpInLists(ip string) (isLists, error) {
-	res := isLists{ 
-		isBlack: false, 
-		isWhite: false,
-	}
-
+func checkIpInLists(ip string) (status, error) {
 	isBlack, err := repository.CheckBlackList(ip)
-	if (err != nil) {
-		return res, err
+	if err != nil {
+		return StatusBlack, err
 	}
 
 	isWhite, err := repository.CheckWhiteList(ip)
-	if (err != nil) {
-		return res, err
+	if err != nil {
+		return StatusWhite, err
 	}
 
-	res.isBlack = isBlack
-	res.isWhite = isWhite
-	return res, nil
+	return StatusNone, nil
 }
 
-func checkBackets(request domain.IncomingRequest) (bool, error){
+func checkBackets(request domain.IncomingRequest) (bool, error) {
 	isAccessCommon, err := checkBacketCommon(request)
 	if err != nil || !isAccessCommon {
 		return false, err
 	}
-
 
 	isAccessIp, err := checkBacketIp(request.IP)
 	if err != nil || !isAccessIp {
@@ -151,7 +145,7 @@ func checkBacketPassword(password string) (bool, error) {
 		return false, err
 	}
 
-	countLimit, err := repository.GetLimitPassword()
+	countLimit, err := repository.GetLimitPassword("max", "hui")
 	if err != nil {
 		return false, err
 	}

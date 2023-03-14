@@ -18,5 +18,5 @@ func InitRoutes() {
 
 	AntiBrouteForceRoutes(antiBruteForce)
 
-	e.Logger.Fatal(e.Start(":" + viper.GetString("PORT")))
+	e.Logger.Fatal(e.Start("localhost:" + viper.GetString("PORT")))
 }
