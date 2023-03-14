@@ -1,9 +1,9 @@
 package main
 
 import (
-	"test/internal"
+	app "test/internal"
 )
 
 func main() {
-	internal.Run()
+	app.Run()
 }
