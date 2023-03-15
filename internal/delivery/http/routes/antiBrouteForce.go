@@ -1,7 +1,7 @@
 package routes
 
 import (
-	handler "test/internal/delivery/http"
+	handler "test/internal/delivery/http/handlers"
 
 	"github.com/labstack/echo/v4"
 )

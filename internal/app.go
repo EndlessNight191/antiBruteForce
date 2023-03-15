@@ -3,16 +3,16 @@ package internal
 import (
 	"log"
 	"test/configs"
-	"test/internal/Infrastructure/cache"
-	"test/internal/routes"
+	"test/internal/repository"
+	"test/internal/delivery/http/routes"
 )
 
 func Run() {
-	if err := configs.Init(); err != nil {
+	if err := configs.InitCGF(); err != nil {
 		log.Fatal(err)
 	}
 
-	if err := cache.Init(); err != nil {
+	if err := repository.InitCache(); err != nil {
 		log.Fatalf("error trying init cache: %v", err)
 	}
 

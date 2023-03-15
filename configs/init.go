@@ -4,7 +4,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func Init() error { // InitCFG
+func InitCGF() error {
 	viper.SetConfigFile("../.env")
 	viper.SetConfigType("env")
 

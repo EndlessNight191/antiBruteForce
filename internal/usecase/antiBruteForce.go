@@ -13,6 +13,17 @@ const (
 	StatusNone
 )
 
+const (
+	maxLimitCommon = "maxLimitCommon"
+	maxLimitIp = "maxLimitIp"
+	maxLimitLogin = "maxLimitLogin"
+	maxLimitPassword= "maxLimitPassword"
+	maxLimitCommonEnv = "MAX_LIMIT_COMMON"
+	maxLimitIpEnv = "MAX_LIMIT_IP"
+	maxLimitLoginEnv = "MAX_LIMIT_LOGIN"
+	maxLimitPasswordEnv= "MAX_LIMIT_PASSWORD"
+)
+
 type access struct {
 	isBlack bool
 	isWhite bool
@@ -30,11 +41,11 @@ func AllowAccess(request domain.IncomingRequest) (domain.ResponseIsAccess, error
 		return domain.ResponseIsAccess{}, err
 	}
 
-	if isLists.isWhite {
+	if isLists == StatusWhite {
 		return domain.ResponseIsAccess{IsAccess: true}, nil // есть доступ по вайт листу
 	}
 
-	if isLists.isBlack {
+	if isLists == StatusBlack {
 		return domain.ResponseIsAccess{}, nil // нет доступа по вайт листу
 	}
 
@@ -48,12 +59,12 @@ func AllowAccess(request domain.IncomingRequest) (domain.ResponseIsAccess, error
 
 func checkIpInLists(ip string) (status, error) {
 	isBlack, err := repository.CheckBlackList(ip)
-	if err != nil {
+	if err != nil || isBlack {
 		return StatusBlack, err
 	}
 
 	isWhite, err := repository.CheckWhiteList(ip)
-	if err != nil {
+	if err != nil || isWhite {
 		return StatusWhite, err
 	}
 
@@ -84,14 +95,14 @@ func checkBackets(request domain.IncomingRequest) (bool, error) {
 	return true, nil
 }
 
-// инкрементить редис, проверять, получать лимит бакета, проверять не превысился ли лимит
 func checkBacketCommon(request domain.IncomingRequest) (bool, error) {
-	count, err := repository.IncrementAuthAttemptsCommon(request)
+	key := joinToFormatCommon(request.IP, request.Login, request.Password)
+	count, err := repository.IncrementByKey(key)
 	if err != nil {
 		return false, err
 	}
 
-	countLimit, err := repository.GetLimitCommon()
+	countLimit, err := repository.GetLimitSettingInt(maxLimitCommon, maxLimitCommonEnv)
 	if err != nil {
 		return false, err
 	}
@@ -104,12 +115,13 @@ func checkBacketCommon(request domain.IncomingRequest) (bool, error) {
 }
 
 func checkBacketIp(ip string) (bool, error) {
-	count, err := repository.IncrementIp(ip)
+	key := joinToFormatIp(ip)
+	count, err := repository.IncrementByKey(key)
 	if err != nil {
 		return false, err
 	}
 
-	countLimit, err := repository.GetLimitIp()
+	countLimit, err := repository.GetLimitSettingInt(maxLimitIp, maxLimitIpEnv)
 	if err != nil {
 		return false, err
 	}
@@ -122,12 +134,13 @@ func checkBacketIp(ip string) (bool, error) {
 }
 
 func checkBacketLogin(login string) (bool, error) {
-	count, err := repository.IncrementLogin(login)
+	key := joinToFormatLogin(login)
+	count, err := repository.IncrementByKey(key)
 	if err != nil {
 		return false, err
 	}
 
-	countLimit, err := repository.GetLimitLogin()
+	countLimit, err := repository.GetLimitSettingInt(maxLimitLogin, maxLimitLoginEnv)
 	if err != nil {
 		return false, err
 	}
@@ -140,12 +153,13 @@ func checkBacketLogin(login string) (bool, error) {
 }
 
 func checkBacketPassword(password string) (bool, error) {
-	count, err := repository.IncrementPassword(password)
+	key := joinToFormatPassword(password)
+	count, err := repository.IncrementByKey(key)
 	if err != nil {
 		return false, err
 	}
 
-	countLimit, err := repository.GetLimitPassword("max", "hui")
+	countLimit, err := repository.GetLimitSettingInt(maxLimitPassword, maxLimitPasswordEnv)
 	if err != nil {
 		return false, err
 	}

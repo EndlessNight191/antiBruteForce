@@ -1,8 +1,9 @@
-package cache
+package repository
 
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/go-redis/redis"
@@ -11,9 +12,9 @@ import (
 
 var RedisClient *redis.Client
 
-func Init() error {
+func InitCache() error {
 	RedisClient = redis.NewClient(&redis.Options{
-		Addr:     viper.GetString("REDIS_ADRESS"), //viper.GetString("REDIS_HOST"), viper.GetInt("REDIS_PORT")
+		Addr:     viper.GetString("REDIS_HOST") + ":" + strconv.Itoa(viper.GetInt("REDIS_PORT")),
 		Password: viper.GetString("REDIS_PASSWORD"),
 		DB:       viper.GetInt("REDIS_DB_INDEX"),
 	})
