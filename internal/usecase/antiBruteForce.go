@@ -24,11 +24,6 @@ const (
 	maxLimitPasswordEnv= "MAX_LIMIT_PASSWORD"
 )
 
-type access struct {
-	isBlack bool
-	isWhite bool
-}
-
 func AllowAccess(request domain.IncomingRequest) (domain.ResponseIsAccess, error) {
 	hashPassword, err := hashPassword(request.Password)
 	if err != nil {
@@ -58,6 +53,8 @@ func AllowAccess(request domain.IncomingRequest) (domain.ResponseIsAccess, error
 }
 
 func checkIpInLists(ip string) (status, error) {
+	ip = deleteIpMask(ip)
+	
 	isBlack, err := repository.CheckBlackList(ip)
 	if err != nil || isBlack {
 		return StatusBlack, err

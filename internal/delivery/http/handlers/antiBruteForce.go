@@ -10,7 +10,7 @@ import (
 	"github.com/labstack/gommon/log"
 )
 
-func AntiBrouteForceHandler(c echo.Context) error {
+func AntiBrouteForce(c echo.Context) error {
     req := new(domain.IncomingRequest)
     if err := c.Bind(&req); err != nil {
         return c.JSON(http.StatusBadRequest, "validator req IncomingRequest")

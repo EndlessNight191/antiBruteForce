@@ -7,9 +7,9 @@ func IncrementByKey(key string) (int64, error) {
 	}
 
 	if result == 1 {
-		if err = RedisClient.Expire(key, 60000).Err(); err != nil {
-			return 0, err
-		} // потом создать глобальную переменную или настройку для експаира?
+        if err := addExpair(key); err != nil {
+            return 0, err
+        }
 	}
 	return result, nil
 }

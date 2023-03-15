@@ -10,6 +10,11 @@ import (
 	"github.com/spf13/viper"
 )
 
+const (
+	expairBacket = "expairBacket"
+	expairBacketEnv = "EXPAIR_BACKET"
+)
+
 var RedisClient *redis.Client
 
 func InitCache() error {
@@ -26,5 +31,24 @@ func InitCache() error {
 		return fmt.Errorf("error init redis: %w", status.Err())
 	}
 
+	return nil
+}
+
+func addExpair(key string) error {
+	valueSetting, err := getSettingFromRedis(expairBacket, expairBacketEnv)
+
+	if err != nil {
+		return err
+	}
+
+	num, err := strconv.Atoi(valueSetting)
+    if err != nil {
+        return fmt.Errorf("atio error: %v", err)
+    }
+
+	duration := time.Duration(num) * time.Second
+	if err := RedisClient.Expire(key, duration).Err(); err != nil {
+		return err
+	}
 	return nil
 }

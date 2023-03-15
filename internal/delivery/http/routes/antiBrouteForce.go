@@ -7,5 +7,5 @@ import (
 )
 
 func AntiBrouteForceRoutes(e *echo.Group) {
-	e.POST("/", handler.AntiBrouteForceHandler)
+	e.POST("/", handler.AntiBrouteForce)
 }

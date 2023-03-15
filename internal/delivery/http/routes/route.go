@@ -15,8 +15,10 @@ func InitRoutes() {
 	})
 
 	antiBruteForce := e.Group("/api/antiBruteForce")
+	admin := e.Group("/api/admin")
 
 	AntiBrouteForceRoutes(antiBruteForce)
+	AdminRoutes(admin)
 
 	e.Logger.Fatal(e.Start(":" + viper.GetString("PORT")))
 }
