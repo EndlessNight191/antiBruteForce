@@ -5,8 +5,8 @@ const (
     blackList = "blackList"
 )
 
-func CheckWhiteList(ip string) (bool, error) {
-    isInWhiteList, err := RedisClient.SIsMember(whiteList, string(ip)).Result()
+func (r *ClientRepository) CheckWhiteList(ip string) (bool, error) {
+    isInWhiteList, err := r.redisClient.SIsMember(whiteList, string(ip)).Result()
     if err != nil {
         return false, err
     }
@@ -14,8 +14,8 @@ func CheckWhiteList(ip string) (bool, error) {
     return isInWhiteList, nil
 }
 
-func CheckBlackList(ip string) (bool, error) {
-    isInBlackList, err := RedisClient.SIsMember(blackList, string(ip)).Result()
+func (r *ClientRepository) CheckBlackList(ip string) (bool, error) {
+    isInBlackList, err := r.redisClient.SIsMember(blackList, string(ip)).Result()
     if err != nil {
         return false, err
     }
@@ -23,15 +23,15 @@ func CheckBlackList(ip string) (bool, error) {
     return isInBlackList, nil
 }
 
-func AddWhiteList(ip string) error {
-    if err := RedisClient.SAdd(whiteList, string(ip)).Err(); err != nil {
+func (r *ClientRepository) AddWhiteList(ip string) error {
+    if err := r.redisClient.SAdd(whiteList, string(ip)).Err(); err != nil {
         return err
     }
     return nil
 }
 
-func AddBlackList(ip string) error {
-    if err := RedisClient.SAdd(blackList, string(ip)).Err(); err != nil {
+func (r *ClientRepository) AddBlackList(ip string) error {
+    if err := r.redisClient.SAdd(blackList, string(ip)).Err(); err != nil {
         return err
     }
     return nil

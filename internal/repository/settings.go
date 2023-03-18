@@ -8,8 +8,8 @@ import (
 	"github.com/spf13/viper"
 )
 
-func GetLimitSettingInt(keyRedis string, keyEnv string) (int, error) {
-	result, err := getSettingFromRedis(string(keyRedis), string(keyEnv))
+func (r *ClientRepository) GetLimitSettingInt(keyRedis string, keyEnv string) (int, error) {
+	result, err := r.getSettingFromRedis(string(keyRedis), string(keyEnv))
 	if err != nil {
 		return 0, err
 	}
@@ -22,8 +22,8 @@ func GetLimitSettingInt(keyRedis string, keyEnv string) (int, error) {
 	return num, nil
 }
 
-func getSettingFromRedis(keyRedis string, keyEnv string) (string, error) {
-	value, err := RedisClient.Get(keyRedis).Result()
+func (r *ClientRepository) getSettingFromRedis(keyRedis string, keyEnv string) (string, error) {
+	value, err := r.redisClient.Get(keyRedis).Result()
 
 	if err != nil {
 		return "", fmt.Errorf("get key: %v", err)
@@ -31,7 +31,7 @@ func getSettingFromRedis(keyRedis string, keyEnv string) (string, error) {
 
 	if err == redis.Nil {
 		settingEnv := viper.GetString(keyEnv)
-		RedisClient.Append(keyRedis, settingEnv)
+		r.redisClient.Append(keyRedis, settingEnv)
 		return settingEnv, nil
 	}
 

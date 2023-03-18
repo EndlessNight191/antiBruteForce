@@ -37,7 +37,7 @@ func joinToFormatPassword(password string) string {
 	return key
 }
 
-func deleteIpMask(ip string) (string) {
+func deleteIpMask(ip string) string {
 	isMask := strings.Contains(ip, "/") 
 	
 	if !isMask {

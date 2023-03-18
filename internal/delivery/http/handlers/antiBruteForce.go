@@ -10,24 +10,30 @@ import (
 	"github.com/labstack/gommon/log"
 )
 
+type Response struct {
+    message string
+}
+
 func AntiBrouteForce(c echo.Context) error {
     req := new(domain.IncomingRequest)
     if err := c.Bind(&req); err != nil {
-        return c.JSON(http.StatusBadRequest, "validator req IncomingRequest")
+        return c.JSON(http.StatusBadRequest, Response{message: "validator req IncomingRequest"})
     }
 
     if err := validator.New().Struct(&req); err != nil {
-        return c.JSON(http.StatusBadRequest, "validator req IncomingRequest")
+        return c.JSON(http.StatusBadRequest, Response{message: "validator req IncomingRequest"})
     }
 
-	access, err := usecase.AllowAccess(*req)
+    useCaseAntiBrouteForce := c.Get("useCase").(*usecase.UseCase)
+
+	access, err := useCaseAntiBrouteForce.AllowAccess(*req)
     if err != nil {
-        log.Info("usecase AllowAccess: %w", err)
-        return c.JSON(http.StatusInternalServerError, "server error")
+        log.Error("usecase AllowAccess: %w", err)
+        return c.JSON(http.StatusInternalServerError,Response{message: "validator req IncomingRequest"})
     }
 
     if !access.IsAccess {
-        return c.JSON(http.StatusForbidden, access)
+        return c.JSON(http.StatusOK, access)
     }
     
 	return c.JSON(http.StatusOK, access)

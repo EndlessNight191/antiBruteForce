@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"test/internal/domain"
-	"test/internal/repository"
 )
 
 type status int
@@ -24,14 +23,14 @@ const (
 	maxLimitPasswordEnv= "MAX_LIMIT_PASSWORD"
 )
 
-func AllowAccess(request domain.IncomingRequest) (domain.ResponseIsAccess, error) {
+func (uc *UseCase) AllowAccess(request domain.IncomingRequest) (domain.ResponseIsAccess, error) {
 	hashPassword, err := hashPassword(request.Password)
 	if err != nil {
 		return domain.ResponseIsAccess{}, err
 	}
 	request.Password = hashPassword
 
-	isLists, err := checkIpInLists(request.IP)
+	isLists, err := uc.checkIpInLists(request.IP)
 	if err != nil {
 		return domain.ResponseIsAccess{}, err
 	}
@@ -44,7 +43,7 @@ func AllowAccess(request domain.IncomingRequest) (domain.ResponseIsAccess, error
 		return domain.ResponseIsAccess{}, nil // нет доступа по вайт листу
 	}
 
-	isAccess, err := checkBackets(request)
+	isAccess, err := uc.checkBackets(request)
 	if err != nil || !isAccess {
 		return domain.ResponseIsAccess{}, err
 	}
@@ -52,15 +51,15 @@ func AllowAccess(request domain.IncomingRequest) (domain.ResponseIsAccess, error
 	return domain.ResponseIsAccess{IsAccess: true}, nil
 }
 
-func checkIpInLists(ip string) (status, error) {
+func (uc *UseCase) checkIpInLists (ip string) (status, error) {
 	ip = deleteIpMask(ip)
 	
-	isBlack, err := repository.CheckBlackList(ip)
+	isBlack, err := uc.repo.CheckBlackList(ip)
 	if err != nil || isBlack {
 		return StatusBlack, err
 	}
 
-	isWhite, err := repository.CheckWhiteList(ip)
+	isWhite, err := uc.repo.CheckWhiteList(ip)
 	if err != nil || isWhite {
 		return StatusWhite, err
 	}
@@ -68,23 +67,23 @@ func checkIpInLists(ip string) (status, error) {
 	return StatusNone, nil
 }
 
-func checkBackets(request domain.IncomingRequest) (bool, error) {
-	isAccessCommon, err := checkBacketCommon(request)
+func (uc *UseCase) checkBackets(request domain.IncomingRequest) (bool, error) {
+	isAccessCommon, err := uc.checkBacketCommon(request)
 	if err != nil || !isAccessCommon {
 		return false, err
 	}
 
-	isAccessIp, err := checkBacketIp(request.IP)
+	isAccessIp, err := uc.checkBacketIp(request.IP)
 	if err != nil || !isAccessIp {
 		return false, err
 	}
 
-	isAccessLogin, err := checkBacketLogin(request.Login)
+	isAccessLogin, err := uc.checkBacketLogin(request.Login)
 	if err != nil || !isAccessLogin {
 		return false, err
 	}
 
-	isAccessPassword, err := checkBacketPassword(request.Password)
+	isAccessPassword, err := uc.checkBacketPassword(request.Password)
 	if err != nil || !isAccessPassword {
 		return false, err
 	}
@@ -92,14 +91,14 @@ func checkBackets(request domain.IncomingRequest) (bool, error) {
 	return true, nil
 }
 
-func checkBacketCommon(request domain.IncomingRequest) (bool, error) {
+func (uc *UseCase) checkBacketCommon(request domain.IncomingRequest) (bool, error) {
 	key := joinToFormatCommon(request.IP, request.Login, request.Password)
-	count, err := repository.IncrementByKey(key)
+	count, err := uc.repo.IncrementByKey(key)
 	if err != nil {
 		return false, err
 	}
 
-	countLimit, err := repository.GetLimitSettingInt(maxLimitCommon, maxLimitCommonEnv)
+	countLimit, err := uc.repo.GetLimitSettingInt(maxLimitCommon, maxLimitCommonEnv)
 	if err != nil {
 		return false, err
 	}
@@ -111,14 +110,14 @@ func checkBacketCommon(request domain.IncomingRequest) (bool, error) {
 	return true, nil
 }
 
-func checkBacketIp(ip string) (bool, error) {
+func (uc *UseCase) checkBacketIp(ip string) (bool, error) {
 	key := joinToFormatIp(ip)
-	count, err := repository.IncrementByKey(key)
+	count, err := uc.repo.IncrementByKey(key)
 	if err != nil {
 		return false, err
 	}
 
-	countLimit, err := repository.GetLimitSettingInt(maxLimitIp, maxLimitIpEnv)
+	countLimit, err := uc.repo.GetLimitSettingInt(maxLimitIp, maxLimitIpEnv)
 	if err != nil {
 		return false, err
 	}
@@ -130,14 +129,14 @@ func checkBacketIp(ip string) (bool, error) {
 	return true, nil
 }
 
-func checkBacketLogin(login string) (bool, error) {
+func (uc *UseCase) checkBacketLogin(login string) (bool, error) {
 	key := joinToFormatLogin(login)
-	count, err := repository.IncrementByKey(key)
+	count, err := uc.repo.IncrementByKey(key)
 	if err != nil {
 		return false, err
 	}
 
-	countLimit, err := repository.GetLimitSettingInt(maxLimitLogin, maxLimitLoginEnv)
+	countLimit, err := uc.repo.GetLimitSettingInt(maxLimitLogin, maxLimitLoginEnv)
 	if err != nil {
 		return false, err
 	}
@@ -149,14 +148,14 @@ func checkBacketLogin(login string) (bool, error) {
 	return true, nil
 }
 
-func checkBacketPassword(password string) (bool, error) {
+func (uc *UseCase) checkBacketPassword(password string) (bool, error) {
 	key := joinToFormatPassword(password)
-	count, err := repository.IncrementByKey(key)
+	count, err := uc.repo.IncrementByKey(key)
 	if err != nil {
 		return false, err
 	}
 
-	countLimit, err := repository.GetLimitSettingInt(maxLimitPassword, maxLimitPasswordEnv)
+	countLimit, err := uc.repo.GetLimitSettingInt(maxLimitPassword, maxLimitPasswordEnv)
 	if err != nil {
 		return false, err
 	}

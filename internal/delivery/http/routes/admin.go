@@ -7,11 +7,13 @@ import (
 )
 
 func AdminRoutes(e *echo.Group) {
-	e.POST("/lists", handler.AddIpToTheList)
-	e.DELETE("/lists", handler.RemoveIpFromTheList)
+	l := e.Group("/lists")
+	l.POST("/", handler.AddIpToTheList)
+	l.DELETE("/", handler.RemoveIpFromTheList)
 
-	e.GET("/settings", handler.GetSettings)
-	e.PUT("/settings", handler.UpdateSetting)
+	s := e.Group("/settings")
+	s.GET("/", handler.GetSettings)
+	s.PUT("/", handler.UpdateSetting)
 
 	e.PUT("/bucket", handler.ResetBucket)
 }

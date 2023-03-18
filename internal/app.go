@@ -3,8 +3,9 @@ package internal
 import (
 	"log"
 	"test/configs"
-	"test/internal/repository"
 	"test/internal/delivery/http/routes"
+	"test/internal/repository"
+	"test/internal/usecase"
 )
 
 func Run() {
@@ -12,9 +13,14 @@ func Run() {
 		log.Fatal(err)
 	}
 
-	if err := repository.InitCache(); err != nil {
+	redisClient, err := repository.InitCache()
+	if err != nil {
 		log.Fatalf("error trying init cache: %v", err)
 	}
 
-	routes.InitRoutes()
+
+	repo := repository.NewRepository(redisClient)
+	useCase := usecase.NewUseCase(repo)
+
+	routes.InitRoutes(useCase)
 }

@@ -15,10 +15,8 @@ const (
 	expairBacketEnv = "EXPAIR_BACKET"
 )
 
-var RedisClient *redis.Client
-
-func InitCache() error {
-	RedisClient = redis.NewClient(&redis.Options{
+func InitCache() (*redis.Client, error) {
+	RedisClient := redis.NewClient(&redis.Options{
 		Addr:     viper.GetString("REDIS_HOST") + ":" + strconv.Itoa(viper.GetInt("REDIS_PORT")),
 		Password: viper.GetString("REDIS_PASSWORD"),
 		DB:       viper.GetInt("REDIS_DB_INDEX"),
@@ -28,14 +26,14 @@ func InitCache() error {
 	defer cancel()
 
 	if status := RedisClient.WithContext(ctx).Ping(); status.Err() != nil {
-		return fmt.Errorf("error init redis: %w", status.Err())
+		return nil, fmt.Errorf("error init redis: %w", status.Err())
 	}
 
-	return nil
+	return RedisClient, nil
 }
 
-func addExpair(key string) error {
-	valueSetting, err := getSettingFromRedis(expairBacket, expairBacketEnv)
+func (r *ClientRepository) addExpair(key string) error {
+	valueSetting, err := r.getSettingFromRedis(expairBacket, expairBacketEnv)
 
 	if err != nil {
 		return err
@@ -47,7 +45,7 @@ func addExpair(key string) error {
     }
 
 	duration := time.Duration(num) * time.Second
-	if err := RedisClient.Expire(key, duration).Err(); err != nil {
+	if err := r.redisClient.Expire(key, duration).Err(); err != nil {
 		return err
 	}
 	return nil
