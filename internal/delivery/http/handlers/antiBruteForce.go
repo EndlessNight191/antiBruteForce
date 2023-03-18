@@ -11,30 +11,37 @@ import (
 )
 
 type Response struct {
-    message string
+	message string
 }
 
-func AntiBrouteForce(c echo.Context) error {
-    req := new(domain.IncomingRequest)
-    if err := c.Bind(&req); err != nil {
-        return c.JSON(http.StatusBadRequest, Response{message: "validator req IncomingRequest"})
-    }
+type some struct {
+	u usecase.UseCase
+}
 
-    if err := validator.New().Struct(&req); err != nil {
-        return c.JSON(http.StatusBadRequest, Response{message: "validator req IncomingRequest"})
-    }
+func NewSome(u usecase.UseCase) *some {
+	return &some{u: u}
+}
 
-    useCaseAntiBrouteForce := c.Get("useCase").(*usecase.UseCase)
+func (s some) AntiBrouteForce(c echo.Context) error {
+	req := new(domain.IncomingRequest)
+	if err := c.Bind(&req); err != nil {
+		return c.JSON(http.StatusBadRequest, Response{message: "validator req IncomingRequest"})
+	}
 
-	access, err := useCaseAntiBrouteForce.AllowAccess(*req)
-    if err != nil {
-        log.Error("usecase AllowAccess: %w", err)
-        return c.JSON(http.StatusInternalServerError,Response{message: "validator req IncomingRequest"})
-    }
+	if err := validator.New().Struct(&req); err != nil {
+		return c.JSON(http.StatusBadRequest, Response{message: "validator req IncomingRequest"})
+	}
 
-    if !access.IsAccess {
-        return c.JSON(http.StatusOK, access)
-    }
-    
+	access, err := s.u.AllowAccess(*req)
+	if err != nil {
+		log.Error("usecase AllowAccess: %w", err)
+
+		return c.JSON(http.StatusInternalServerError, Response{message: "validator req IncomingRequest"})
+	}
+
+	if !access.IsAccess {
+		return c.JSON(http.StatusOK, access)
+	}
+
 	return c.JSON(http.StatusOK, access)
 }

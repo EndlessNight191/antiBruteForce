@@ -11,9 +11,19 @@ import (
 )
 
 const (
-	expairBacket = "expairBacket"
+	expairBacket    = "expairBacket"
 	expairBacketEnv = "EXPAIR_BACKET"
 )
+
+type Cache struct {
+	client *redis.Client
+}
+
+func NewCache(client *redis.Client) *Cache {
+	return &Cache{
+		client: client,
+	}
+}
 
 func InitCache() (*redis.Client, error) {
 	RedisClient := redis.NewClient(&redis.Options{
@@ -32,7 +42,7 @@ func InitCache() (*redis.Client, error) {
 	return RedisClient, nil
 }
 
-func (r *ClientRepository) addExpair(key string) error {
+func (c Cache) addExpair(key string) error {
 	valueSetting, err := r.getSettingFromRedis(expairBacket, expairBacketEnv)
 
 	if err != nil {
@@ -40,13 +50,14 @@ func (r *ClientRepository) addExpair(key string) error {
 	}
 
 	num, err := strconv.Atoi(valueSetting)
-    if err != nil {
-        return fmt.Errorf("atio error: %v", err)
-    }
+	if err != nil {
+		return fmt.Errorf("atio error: %v", err)
+	}
 
 	duration := time.Duration(num) * time.Second
 	if err := r.redisClient.Expire(key, duration).Err(); err != nil {
 		return err
 	}
+
 	return nil
 }

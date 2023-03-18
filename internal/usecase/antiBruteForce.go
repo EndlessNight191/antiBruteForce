@@ -13,17 +13,17 @@ const (
 )
 
 const (
-	maxLimitCommon = "maxLimitCommon"
-	maxLimitIp = "maxLimitIp"
-	maxLimitLogin = "maxLimitLogin"
-	maxLimitPassword= "maxLimitPassword"
-	maxLimitCommonEnv = "MAX_LIMIT_COMMON"
-	maxLimitIpEnv = "MAX_LIMIT_IP"
-	maxLimitLoginEnv = "MAX_LIMIT_LOGIN"
-	maxLimitPasswordEnv= "MAX_LIMIT_PASSWORD"
+	maxLimitCommon      = "maxLimitCommon"
+	maxLimitIp          = "maxLimitIp"
+	maxLimitLogin       = "maxLimitLogin"
+	maxLimitPassword    = "maxLimitPassword"
+	maxLimitCommonEnv   = "MAX_LIMIT_COMMON"
+	maxLimitIpEnv       = "MAX_LIMIT_IP"
+	maxLimitLoginEnv    = "MAX_LIMIT_LOGIN"
+	maxLimitPasswordEnv = "MAX_LIMIT_PASSWORD"
 )
 
-func (uc *UseCase) AllowAccess(request domain.IncomingRequest) (domain.ResponseIsAccess, error) {
+func (uc UseCase) AllowAccess(request domain.IncomingRequest) (domain.ResponseIsAccess, error) {
 	hashPassword, err := hashPassword(request.Password)
 	if err != nil {
 		return domain.ResponseIsAccess{}, err
@@ -51,9 +51,9 @@ func (uc *UseCase) AllowAccess(request domain.IncomingRequest) (domain.ResponseI
 	return domain.ResponseIsAccess{IsAccess: true}, nil
 }
 
-func (uc *UseCase) checkIpInLists (ip string) (status, error) {
+func (uc *UseCase) checkIpInLists(ip string) (status, error) {
 	ip = deleteIpMask(ip)
-	
+
 	isBlack, err := uc.repo.CheckBlackList(ip)
 	if err != nil || isBlack {
 		return StatusBlack, err
