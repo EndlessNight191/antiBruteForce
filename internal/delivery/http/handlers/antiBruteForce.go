@@ -14,7 +14,17 @@ type Response struct {
     message string
 }
 
-func AntiBrouteForce(c echo.Context) error {
+type antiBrouteForceHandler struct {
+	usecase usecase.UseCase
+}
+
+func NewAntiBrouteForceHandler(uc usecase.UseCase) *antiBrouteForceHandler {
+	return &antiBrouteForceHandler{
+		usecase: uc,
+	}
+}
+
+func (uc antiBrouteForceHandler) AntiBrouteForceCheck(c echo.Context) error {
     req := new(domain.IncomingRequest)
     if err := c.Bind(&req); err != nil {
         return c.JSON(http.StatusBadRequest, Response{message: "validator req IncomingRequest"})
@@ -24,9 +34,7 @@ func AntiBrouteForce(c echo.Context) error {
         return c.JSON(http.StatusBadRequest, Response{message: "validator req IncomingRequest"})
     }
 
-    useCaseAntiBrouteForce := c.Get("useCase").(*usecase.UseCase)
-
-	access, err := useCaseAntiBrouteForce.AllowAccess(*req)
+	access, err := uc.usecase.AllowAccess(*req)
     if err != nil {
         log.Error("usecase AllowAccess: %w", err)
         return c.JSON(http.StatusInternalServerError,Response{message: "validator req IncomingRequest"})
