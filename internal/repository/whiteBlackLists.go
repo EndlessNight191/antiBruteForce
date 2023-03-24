@@ -36,3 +36,17 @@ func (r *ClientRepository) AddBlackList(ip string) error {
     }
     return nil
 }
+
+func (r *ClientRepository) RemoveFromWhiteList(ip string) error {
+    if err := r.redisClient.SRem(whiteList, string(ip)).Err(); err != nil {
+        return err
+    }
+    return nil
+}
+
+func (r *ClientRepository) RemoveFromBlackList(ip string) error {
+    if err := r.redisClient.SRem(blackList, string(ip)).Err(); err != nil {
+        return err
+    }
+    return nil
+}

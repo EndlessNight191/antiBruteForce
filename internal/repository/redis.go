@@ -10,11 +10,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-const (
-	expairBacket = "expairBacket"
-	expairBacketEnv = "EXPAIR_BACKET"
-)
-
 func InitCache() (*redis.Client, error) {
 	RedisClient := redis.NewClient(&redis.Options{
 		Addr:     viper.GetString("REDIS_HOST") + ":" + strconv.Itoa(viper.GetInt("REDIS_PORT")),
@@ -33,16 +28,7 @@ func InitCache() (*redis.Client, error) {
 }
 
 func (r *ClientRepository) addExpair(key string) error {
-	valueSetting, err := r.getSettingFromRedis(expairBacket, expairBacketEnv)
-
-	if err != nil {
-		return err
-	}
-
-	num, err := strconv.Atoi(valueSetting)
-    if err != nil {
-        return fmt.Errorf("atio error: %v", err)
-    }
+	num := r.setting.ExpairBacket
 
 	duration := time.Duration(num) * time.Second
 	if err := r.redisClient.Expire(key, duration).Err(); err != nil {

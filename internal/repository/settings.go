@@ -8,8 +8,8 @@ import (
 	"github.com/spf13/viper"
 )
 
-func (r *ClientRepository) GetLimitSettingInt(keyRedis string, keyEnv string) (int, error) {
-	result, err := r.getSettingFromRedis(string(keyRedis), string(keyEnv))
+func (r *ClientRepository) GetLimitSettingInt(keyRedis string) (int, error) {
+	result, err := r.GetSettingFromRedis(string(keyRedis))
 	if err != nil {
 		return 0, err
 	}
@@ -22,18 +22,28 @@ func (r *ClientRepository) GetLimitSettingInt(keyRedis string, keyEnv string) (i
 	return num, nil
 }
 
-func (r *ClientRepository) getSettingFromRedis(keyRedis string, keyEnv string) (string, error) {
-	value, err := r.redisClient.Get(keyRedis).Result()
+func (r *ClientRepository) GetSettingFromRedis(key string) (string, error) {
+	value, err := r.redisClient.Get(key).Result()
 
 	if err != nil {
 		return "", fmt.Errorf("get key: %v", err)
 	}
 
 	if err == redis.Nil {
-		settingEnv := viper.GetString(keyEnv)
-		r.redisClient.Append(keyRedis, settingEnv)
+		settingEnv := viper.GetString(key)
+		r.redisClient.Append(key, settingEnv)
 		return settingEnv, nil
 	}
 
 	return value, nil
+}
+
+
+func (r *ClientRepository) UpdateSetting(keyRedis string, newValue int) error {
+	err := r.redisClient.Set(string(keyRedis), newValue, 0).Err()
+	if err != nil {
+		return fmt.Errorf("update key: %v", err)
+	}
+
+	return nil
 }

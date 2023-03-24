@@ -9,9 +9,12 @@ import (
 )
 
 func Run() {
-	if err := configs.InitCGF(); err != nil {
+	configSetting, err := configs.InitCGF()
+	if err != nil {
 		log.Fatal(err)
 	}
+
+
 
 	redisClient, err := repository.InitCache()
 	if err != nil {
@@ -19,8 +22,8 @@ func Run() {
 	}
 
 
-	repo := repository.NewRepository(redisClient)
-	useCase := usecase.NewUseCase(repo)
+	repo := repository.NewRepository(redisClient, configSetting)
+	useCase := usecase.NewUseCase(repo, configSetting)
 
 	routes.InitRoutes(useCase)
 }

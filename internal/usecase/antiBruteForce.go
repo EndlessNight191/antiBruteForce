@@ -12,17 +12,6 @@ const (
 	StatusNone
 )
 
-const (
-	maxLimitCommon = "maxLimitCommon"
-	maxLimitIp = "maxLimitIp"
-	maxLimitLogin = "maxLimitLogin"
-	maxLimitPassword= "maxLimitPassword"
-	maxLimitCommonEnv = "MAX_LIMIT_COMMON"
-	maxLimitIpEnv = "MAX_LIMIT_IP"
-	maxLimitLoginEnv = "MAX_LIMIT_LOGIN"
-	maxLimitPasswordEnv= "MAX_LIMIT_PASSWORD"
-)
-
 func (uc *UseCase) AllowAccess(request domain.IncomingRequest) (domain.ResponseIsAccess, error) {
 	hashPassword, err := hashPassword(request.Password)
 	if err != nil {
@@ -98,7 +87,7 @@ func (uc *UseCase) checkBacketCommon(request domain.IncomingRequest) (bool, erro
 		return false, err
 	}
 
-	countLimit, err := uc.repo.GetLimitSettingInt(maxLimitCommon, maxLimitCommonEnv)
+	countLimit := uc.setting.MaxLimitCommon
 	if err != nil {
 		return false, err
 	}
@@ -117,7 +106,7 @@ func (uc *UseCase) checkBacketIp(ip string) (bool, error) {
 		return false, err
 	}
 
-	countLimit, err := uc.repo.GetLimitSettingInt(maxLimitIp, maxLimitIpEnv)
+	countLimit := uc.setting.MaxLimitIp
 	if err != nil {
 		return false, err
 	}
@@ -136,7 +125,7 @@ func (uc *UseCase) checkBacketLogin(login string) (bool, error) {
 		return false, err
 	}
 
-	countLimit, err := uc.repo.GetLimitSettingInt(maxLimitLogin, maxLimitLoginEnv)
+	countLimit := uc.setting.MaxLimitLogin
 	if err != nil {
 		return false, err
 	}
@@ -155,7 +144,7 @@ func (uc *UseCase) checkBacketPassword(password string) (bool, error) {
 		return false, err
 	}
 
-	countLimit, err := uc.repo.GetLimitSettingInt(maxLimitPassword, maxLimitPasswordEnv)
+	countLimit := uc.setting.MaxLimitPassword
 	if err != nil {
 		return false, err
 	}
