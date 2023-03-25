@@ -7,7 +7,7 @@ import (
 )
 
 func InitCGF() (*domain.ConfigSetting, error) {
-	viper.SetConfigFile("../.env")
+	viper.SetConfigFile(".env")
 	viper.SetConfigType("env")
 
 

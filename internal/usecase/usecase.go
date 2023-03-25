@@ -10,6 +10,6 @@ type UseCase struct {
     setting *domain.ConfigSetting
 }
 
-func NewUseCase(repo repository.Repository, setting *domain.ConfigSetting) *UseCase {
-    return &UseCase{repo, setting}
+func NewUseCase(repo repository.Repository, setting *domain.ConfigSetting) UseCase {
+    return UseCase{repo, setting}
 }

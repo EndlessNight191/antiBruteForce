@@ -2,11 +2,44 @@ package usecase
 
 import "test/internal/domain"
 
-func (uc UseCase) GetSettings() *domain.ConfigSetting {
-	return uc.setting
+func (uc UseCase) GetSettings() (domain.ConfigSetting, error) {
+	maxLimitCommon, err := uc.repo.GetLimitSettingInt(domain.MaxLimitCommon)
+	if err != nil {
+		return domain.ConfigSetting{}, err
+	}
+
+	maxLimitIp, err := uc.repo.GetLimitSettingInt(domain.MaxLimitIp)
+	if err != nil {
+		return domain.ConfigSetting{}, err
+	}
+
+	maxLimitLogin, err := uc.repo.GetLimitSettingInt(domain.MaxLimitLogin)
+	if err != nil {
+		return domain.ConfigSetting{}, err
+	}
+
+	maxLimitPassword, err := uc.repo.GetLimitSettingInt(domain.MaxLimitPassword)
+	if err != nil {
+		return domain.ConfigSetting{}, err
+	}
+
+	expairBacket, err := uc.repo.GetLimitSettingInt(domain.ExpairBacket)
+	if err != nil {
+		return domain.ConfigSetting{}, err
+	}
+
+	setting := domain.ConfigSetting{
+		MaxLimitCommon: maxLimitCommon,
+		MaxLimitIp: maxLimitIp,       
+		MaxLimitLogin: maxLimitLogin,   
+		MaxLimitPassword: maxLimitPassword,
+		ExpairBacket: expairBacket,
+	}
+
+	return setting, nil
 }
 
-func (uc UseCase) UpdateSettings(settingUpdate domain.ConfigSetting) error {
+func (uc *UseCase) UpdateSettings(settingUpdate domain.ConfigSetting) error {
 	if settingUpdate.ExpairBacket != 0 {
 		uc.setting.ExpairBacket = settingUpdate.ExpairBacket
 		if err := uc.repo.UpdateSetting(domain.ExpairBacket, settingUpdate.ExpairBacket); err != nil {

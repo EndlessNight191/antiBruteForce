@@ -23,6 +23,10 @@ func Run() {
 
 	repo := repository.NewRepository(redisClient, configSetting)
 	useCase := usecase.NewUseCase(repo, configSetting)
+	*configSetting, err = useCase.GetSettings()
+	if err != nil {
+		log.Fatalf("error trying init setting: %v", err)
+	}
 
 	routes.InitRoutes(useCase)
 }

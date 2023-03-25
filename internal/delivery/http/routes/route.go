@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func InitRoutes(useCase *usecase.UseCase) {
+func InitRoutes(useCase usecase.UseCase) {
 	e := echo.New()
 
 	e.GET("/ping", func(c echo.Context) error {
@@ -18,8 +18,8 @@ func InitRoutes(useCase *usecase.UseCase) {
 	antiBruteForce := e.Group("/api/antiBruteForce")
 	admin := e.Group("/api/admin")
 
-	AntiBrouteForceRoutes(antiBruteForce, *useCase)
-	AdminRoutes(admin)
+	AntiBrouteForceRoutes(antiBruteForce, useCase)
+	AdminRoutes(admin, useCase)
 
 	e.Logger.Fatal(e.Start(":" + viper.GetString("PORT")))
 }
