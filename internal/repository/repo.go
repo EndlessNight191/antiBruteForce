@@ -19,6 +19,7 @@ type Repository interface {
 	GetLimitSettingInt  (keyRedis string) 					(int, error)
 	GetSettingFromRedis (keyRedis string) 					(string, error)
 	addExpair			(string) 							(error)
+	DeleteByKey			(string)							(error)
 	IncrementByKey 		(string) 							(int64, error)
 	RemoveFromWhiteList (string)							(error)
 	RemoveFromBlackList	(string)							(error)

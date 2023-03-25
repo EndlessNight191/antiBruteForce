@@ -2,21 +2,50 @@ package usecase
 
 import "test/internal/domain"
 
-func (uc *UseCase) GetSetting(title string) (int) {
-	return uc.setting.MaxLimitCommon
+func (uc UseCase) GetSettings() *domain.ConfigSetting {
+	return uc.setting
 }
 
-func (uc *UseCase) UpdateSetting(title string, value int) (int, error) {
-	if err := uc.repo.UpdateSetting(title, value); err != nil {
-		return value, err
+func (uc UseCase) UpdateSettings(settingUpdate domain.ConfigSetting) error {
+	if settingUpdate.ExpairBacket != 0 {
+		uc.setting.ExpairBacket = settingUpdate.ExpairBacket
+		if err := uc.repo.UpdateSetting(domain.ExpairBacket, settingUpdate.ExpairBacket); err != nil {
+			return err
+		}
 	}
 
-	// uc.setting
+	if settingUpdate.MaxLimitCommon != 0 {
+		uc.setting.MaxLimitCommon = settingUpdate.MaxLimitCommon
+		if err := uc.repo.UpdateSetting(domain.MaxLimitCommon, settingUpdate.MaxLimitCommon); err != nil {
+			return err
+		}
+	}
 
-	return value, nil
+	if settingUpdate.MaxLimitIp != 0 {
+		uc.setting.MaxLimitIp = settingUpdate.MaxLimitIp
+		if err := uc.repo.UpdateSetting(domain.MaxLimitIp, settingUpdate.MaxLimitIp); err != nil {
+			return err
+		}
+	}
+
+	if settingUpdate.MaxLimitLogin != 0 {
+		uc.setting.MaxLimitLogin = settingUpdate.MaxLimitLogin
+		if err := uc.repo.UpdateSetting(domain.MaxLimitLogin, settingUpdate.MaxLimitLogin); err != nil {
+			return err
+		}
+	}
+
+	if settingUpdate.MaxLimitPassword != 0 {
+		uc.setting.MaxLimitPassword = settingUpdate.MaxLimitPassword
+		if err := uc.repo.UpdateSetting(domain.MaxLimitPassword, settingUpdate.MaxLimitPassword); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
-func (uc *UseCase) AddIpToTheList(d domain.ListsActions) error {
+func (uc UseCase) AddIpToTheList(d domain.ListsActions) error {
 	if d.TitleList == domain.ListBlack {
 		if err := uc.repo.AddBlackList(d.IP); err != nil {
 			return err
@@ -36,7 +65,7 @@ func (uc *UseCase) AddIpToTheList(d domain.ListsActions) error {
 	return nil
 }
 
-func (uc *UseCase) RemoveIpToTheList(d domain.ListsActions) error {
+func (uc UseCase) RemoveIpToTheList(d domain.ListsActions) error {
 	if d.TitleList == domain.ListBlack {
 		if err := uc.repo.RemoveFromBlackList(d.IP); err != nil {
 			return err
@@ -56,7 +85,20 @@ func (uc *UseCase) RemoveIpToTheList(d domain.ListsActions) error {
 	return nil
 }
 
-func (uc *UseCase) ResetBucket(bucket domain.ResetBucket) error {
+func (uc UseCase) ResetBucket(resetBucket domain.ResetBucket) error {
+	if resetBucket.IP != "" {
+		ipKey := joinToFormatIp(resetBucket.IP)
+		if err := uc.repo.DeleteByKey(ipKey); err != nil {
+			return err
+		}
+	}
+
+	if resetBucket.Login != "" {
+		loginKey := joinToFormatLogin(resetBucket.Login)
+		if err := uc.repo.DeleteByKey(loginKey); err != nil {
+			return err
+		}
+	} 
 
 	return nil
 }

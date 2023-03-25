@@ -12,7 +12,7 @@ const (
 	StatusNone
 )
 
-func (uc *UseCase) AllowAccess(request domain.IncomingRequest) (domain.ResponseIsAccess, error) {
+func (uc UseCase) AllowAccess(request domain.IncomingRequest) (domain.ResponseIsAccess, error) {
 	hashPassword, err := hashPassword(request.Password)
 	if err != nil {
 		return domain.ResponseIsAccess{}, err
@@ -40,7 +40,7 @@ func (uc *UseCase) AllowAccess(request domain.IncomingRequest) (domain.ResponseI
 	return domain.ResponseIsAccess{IsAccess: true}, nil
 }
 
-func (uc *UseCase) checkIpInLists (ip string) (status, error) {
+func (uc UseCase) checkIpInLists (ip string) (status, error) {
 	ip = deleteIpMask(ip)
 	
 	isBlack, err := uc.repo.CheckBlackList(ip)
@@ -56,7 +56,7 @@ func (uc *UseCase) checkIpInLists (ip string) (status, error) {
 	return StatusNone, nil
 }
 
-func (uc *UseCase) checkBackets(request domain.IncomingRequest) (bool, error) {
+func (uc UseCase) checkBackets(request domain.IncomingRequest) (bool, error) {
 	isAccessCommon, err := uc.checkBacketCommon(request)
 	if err != nil || !isAccessCommon {
 		return false, err
@@ -80,7 +80,7 @@ func (uc *UseCase) checkBackets(request domain.IncomingRequest) (bool, error) {
 	return true, nil
 }
 
-func (uc *UseCase) checkBacketCommon(request domain.IncomingRequest) (bool, error) {
+func (uc UseCase) checkBacketCommon(request domain.IncomingRequest) (bool, error) {
 	key := joinToFormatCommon(request.IP, request.Login, request.Password)
 	count, err := uc.repo.IncrementByKey(key)
 	if err != nil {
@@ -99,7 +99,7 @@ func (uc *UseCase) checkBacketCommon(request domain.IncomingRequest) (bool, erro
 	return true, nil
 }
 
-func (uc *UseCase) checkBacketIp(ip string) (bool, error) {
+func (uc UseCase) checkBacketIp(ip string) (bool, error) {
 	key := joinToFormatIp(ip)
 	count, err := uc.repo.IncrementByKey(key)
 	if err != nil {
@@ -118,7 +118,7 @@ func (uc *UseCase) checkBacketIp(ip string) (bool, error) {
 	return true, nil
 }
 
-func (uc *UseCase) checkBacketLogin(login string) (bool, error) {
+func (uc UseCase) checkBacketLogin(login string) (bool, error) {
 	key := joinToFormatLogin(login)
 	count, err := uc.repo.IncrementByKey(key)
 	if err != nil {
@@ -137,7 +137,7 @@ func (uc *UseCase) checkBacketLogin(login string) (bool, error) {
 	return true, nil
 }
 
-func (uc *UseCase) checkBacketPassword(password string) (bool, error) {
+func (uc UseCase) checkBacketPassword(password string) (bool, error) {
 	key := joinToFormatPassword(password)
 	count, err := uc.repo.IncrementByKey(key)
 	if err != nil {

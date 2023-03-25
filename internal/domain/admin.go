@@ -9,16 +9,16 @@ const (
 )
 
 type ConfigSetting struct {
-	MaxLimitCommon int
-	MaxLimitIp int
-	MaxLimitLogin int
-	MaxLimitPassword int
-	ExpairBacket int
+	MaxLimitCommon 		int `json:"maxLimitCommon" validate:"max=10"`
+	MaxLimitIp 			int `json:"maxLimitIp" validate:"max=10"`
+	MaxLimitLogin 		int	`json:"maxLimitLogin" validate:"max=10"`
+	MaxLimitPassword 	int	`json:"maxLimitPassword" validate:"max=10"`
+	ExpairBacket 		int	`json:"mxpairBacket" validate:"max=10"`
 }
 
 type ResetBucket struct {
-	Login    string `json:"login" validate:"required,max=50"`
-	IP       string `json:"ip" validate:"required,max=50"`
+	Login    string `json:"login" validate:"max=50"`
+	IP       string `json:"ip" validate:"max=50"`
 }
 
 type ListType string

@@ -15,7 +15,6 @@ func Run() {
 	}
 
 
-
 	redisClient, err := repository.InitCache()
 	if err != nil {
 		log.Fatalf("error trying init cache: %v", err)
