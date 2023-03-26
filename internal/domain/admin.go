@@ -13,7 +13,7 @@ type ConfigSetting struct {
 	MaxLimitIp 			int `json:"maxLimitIp" validate:"max=10"`
 	MaxLimitLogin 		int	`json:"maxLimitLogin" validate:"max=10"`
 	MaxLimitPassword 	int	`json:"maxLimitPassword" validate:"max=10"`
-	ExpairBacket 		int	`json:"mxpairBacket" validate:"max=10"`
+	ExpairBacket 		int	`json:"expairBacket" validate:"max=10"`
 }
 
 type ResetBucket struct {

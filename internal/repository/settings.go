@@ -25,14 +25,14 @@ func (r *ClientRepository) GetLimitSettingInt(keyRedis string) (int, error) {
 func (r *ClientRepository) GetSettingFromRedis(key string) (string, error) {
 	value, err := r.redisClient.Get(key).Result()
 
-	if err != nil {
-		return "", fmt.Errorf("get key: %v", err)
-	}
-
 	if err == redis.Nil {
 		settingEnv := viper.GetString(key)
 		r.redisClient.Append(key, settingEnv)
 		return settingEnv, nil
+	}
+
+	if err != nil {
+		return "", fmt.Errorf("get key: %v", err)
 	}
 
 	return value, nil
