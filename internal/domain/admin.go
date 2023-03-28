@@ -17,8 +17,8 @@ type ConfigSetting struct {
 }
 
 type ResetBucket struct {
-	Login    string `json:"login" validate:"max=50"`
-	IP       string `json:"ip" validate:"max=50"`
+	Login    string `json:"login" validate:"required,max=50"`
+	IP       string `json:"ip" validate:"required,max=50"`
 }
 
 type ListType string

@@ -6,6 +6,8 @@ import (
 	"test/internal/delivery/http/routes"
 	"test/internal/repository"
 	"test/internal/usecase"
+
+	"github.com/spf13/viper"
 )
 
 func Run() {
@@ -28,5 +30,5 @@ func Run() {
 		log.Fatalf("error trying init setting: %v", err)
 	}
 
-	routes.InitRoutes(useCase)
+	routes.InitRoutes(useCase, configSetting, viper.GetString("SECRET_KEY"))
 }

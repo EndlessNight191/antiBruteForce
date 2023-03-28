@@ -1,10 +1,11 @@
-package http
+package handlers
 
 import (
 	"net/http"
 	"test/internal/domain"
 	"test/internal/usecase"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 )
 
@@ -21,11 +22,15 @@ func NewBacketHandler(uc usecase.UseCase) *backetHandler {
 func (uc backetHandler) ResetBucket(c echo.Context) error {
 	resetBucket := new(domain.ResetBucket)
     if err := c.Bind(&resetBucket); err != nil {
-        return c.JSON(http.StatusBadRequest, Response{message: "validator req listsActions"})
+        return c.JSON(http.StatusBadRequest, Response{Message: "validator req listsActions"})
+    }
+
+	if err := validator.New().Struct(resetBucket); err != nil {
+        return c.JSON(http.StatusBadRequest, Response{Message: err.Error()})
     }
 
 	if err := uc.usecase.ResetBucket(*resetBucket); err != nil {
-		return c.JSON(http.StatusBadRequest, Response{message: "internal server error"})
+		return c.JSON(http.StatusBadRequest, Response{Message: "internal server error"})
 	}
-	return c.JSON(http.StatusOK, Response{message: "ok"})
+	return c.JSON(http.StatusOK, Response{Message: "ok"})
 }

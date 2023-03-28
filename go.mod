@@ -6,6 +6,7 @@ require github.com/go-playground/validator v9.31.0+incompatible
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 )
 
@@ -18,6 +19,7 @@ require (
 	github.com/go-playground/validator/v10 v10.11.2
 	github.com/go-redis/redis v6.15.9+incompatible // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
+	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/echo/v4 v4.10.2 // indirect
 	github.com/labstack/gommon v0.4.0 // indirect
 	github.com/leodido/go-urn v1.2.2 // indirect

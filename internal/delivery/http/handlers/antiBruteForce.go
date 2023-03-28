@@ -1,4 +1,4 @@
-package http
+package handlers
 
 import (
 	"net/http"
@@ -11,7 +11,7 @@ import (
 )
 
 type Response struct {
-    message string
+    Message string `json:"message"`
 }
 
 type antiBrouteForceHandler struct {
@@ -27,17 +27,17 @@ func NewAntiBrouteForceHandler(uc usecase.UseCase) *antiBrouteForceHandler {
 func (uc antiBrouteForceHandler) AntiBrouteForceCheck(c echo.Context) error {
     req := new(domain.IncomingRequest)
     if err := c.Bind(&req); err != nil {
-        return c.JSON(http.StatusBadRequest, Response{message: "validator req IncomingRequest"})
+        return c.JSON(http.StatusBadRequest, Response{Message: "validator req IncomingRequest"})
     }
 
-    if err := validator.New().Struct(&req); err != nil {
-        return c.JSON(http.StatusBadRequest, Response{message: "validator req IncomingRequest"})
+    if err := validator.New().Struct(req); err != nil {
+        return c.JSON(http.StatusBadRequest, Response{Message: err.Error()})
     }
 
 	access, err := uc.usecase.AllowAccess(*req)
     if err != nil {
         log.Error("usecase AllowAccess: %w", err)
-        return c.JSON(http.StatusInternalServerError,Response{message: "validator req IncomingRequest"})
+        return c.JSON(http.StatusInternalServerError, Response{Message: "validator req IncomingRequest"})
     }
 
     if !access.IsAccess {
