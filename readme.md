@@ -1,6 +1,6 @@
 
 # Readme Project
-
+documentation address - http://localhost:host/swagger/index.html (after swag init)
 
 
 ## Example .env
