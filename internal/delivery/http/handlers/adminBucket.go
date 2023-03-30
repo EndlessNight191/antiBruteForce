@@ -21,13 +21,13 @@ func NewBacketHandler(uc usecase.UseCase) *backetHandler {
 
 func (uc backetHandler) ResetBucket(c echo.Context) error {
 	resetBucket := new(domain.ResetBucket)
-    if err := c.Bind(&resetBucket); err != nil {
-        return c.JSON(http.StatusBadRequest, Response{Message: "validator req listsActions"})
-    }
+	if err := c.Bind(&resetBucket); err != nil {
+		return c.JSON(http.StatusBadRequest, Response{Message: "validator req listsActions"})
+	}
 
 	if err := validator.New().Struct(resetBucket); err != nil {
-        return c.JSON(http.StatusBadRequest, Response{Message: err.Error()})
-    }
+		return c.JSON(http.StatusBadRequest, Response{Message: err.Error()})
+	}
 
 	if err := uc.usecase.ResetBucket(*resetBucket); err != nil {
 		return c.JSON(http.StatusBadRequest, Response{Message: "internal server error"})

@@ -47,17 +47,3 @@ func deleteIpMask(ip string) string {
 	parts := strings.Split(ip, "/")
     return parts[0]
 }
-
-// func checkNetworkIp(ip string, ipMask string) (bool, error) {
-// 	ipParse := net.ParseIP(ip)
-//     _, subnet, err := net.ParseCIDR(ipMask)
-// 	if err != nil {
-// 		return false, fmt.Errorf("ParseCIDR error: %v", err)
-// 	}
-
-//     if subnet.Contains(ipParse) {
-//         return true, nil // принадлежит под сети
-//     } else {
-//         return false, nil // не принадлежит под сети
-//     }
-// }

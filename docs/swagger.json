@@ -1,0 +1,58 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "The service is designed to detect and prevent brute-force attacks on web resources.",
+        "title": "Anti Brute Force Service",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:5080",
+    "basePath": "/",
+    "paths": {
+        "/api/admins/lists/": {
+            "post": {
+                "description": "adds an ip address to the white/black lists for quick access or a ban on brute force",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "adminLists"
+                ],
+                "summary": "add ip in black/white lists",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "handlers.Response": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

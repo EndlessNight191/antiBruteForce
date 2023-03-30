@@ -1,3 +1,4 @@
+// @SwaggoFile some_service_docs
 package routes
 
 import (
