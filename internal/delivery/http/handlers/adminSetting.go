@@ -19,6 +19,16 @@ func NewSettingsHandler(uc usecase.UseCase) *settingsHandler {
 	}
 }
 
+// GET SETTINGS
+// @Summary Get settings in app
+// @Description get the actual settings that affect the operation of the application
+// @Tags adminSettings
+// @Accept json
+// @Produce json
+// @Success 200 {object} Response
+// @Failure 400 {object} Response
+// @Failure 500 {object} Response
+// @Router /api/admins/settings/ [get]
 func (uc settingsHandler) GetSettings(c echo.Context) error {
 	settings, err := uc.usecase.GetSettings()
 	if err != nil {
@@ -28,6 +38,17 @@ func (uc settingsHandler) GetSettings(c echo.Context) error {
 	return c.JSON(http.StatusOK, settings)
 }
 
+// UPDATE SETTINGS
+// @Summary update settings in app
+// @Description update the actual settings that affect the operation of the application
+// @Tags adminSettings
+// @Accept json
+// @Produce json
+// @Param settings body domain.ConfigSettingtrue "update settings"
+// @Success 200 domain.ConfigSettingtrue Response
+// @Failure 400 {object} Response
+// @Failure 500 {object} Response
+// @Router /api/admins/settings/ [put]
 func (uc settingsHandler) UpdateSetting(c echo.Context) error {
     updateSetting := new(domain.ConfigSetting)
     if err := c.Bind(&updateSetting); err != nil {
@@ -44,6 +65,17 @@ func (uc settingsHandler) UpdateSetting(c echo.Context) error {
 	return c.JSON(http.StatusOK, updateSetting)
 }
 
+// LISTS
+// @Summary add ip in black/white lists
+// @Description adds an ip address to the white/black lists for quick access or a ban on brute force
+// @Tags adminLists
+// @Accept json
+// @Produce json
+// @Param settings body domain.ListsActions "add ip in lists"
+// @Success 200 {object} Response
+// @Failure 400 {object} Response
+// @Failure 500 {object} Response
+// @Router /api/admins/lists/ [post]
 func (uc settingsHandler) AddIpToTheList(c echo.Context) error {
 	listsActions := new(domain.ListsActions)
     if err := c.Bind(&listsActions); err != nil {
@@ -60,6 +92,17 @@ func (uc settingsHandler) AddIpToTheList(c echo.Context) error {
 	return c.JSON(http.StatusOK, Response{Message: "ok"})
 }
 
+// LISTS
+// @Summary delete ip from black/white lists
+// @Description removes the ip address from the white/black lists for quick access or brute force ban
+// @Tags adminLists
+// @Accept json
+// @Produce json
+// @Param settings body domain.ListsActions "delete ip from lists"
+// @Success 200 {object} Response
+// @Failure 400 {object} Response
+// @Failure 500 {object} Response
+// @Router /api/admins/lists/ [delete]
 func (uc settingsHandler) RemoveIpFromTheList(c echo.Context) error {
 	listsActions := new(domain.ListsActions)
     if err := c.Bind(&listsActions); err != nil {

@@ -19,6 +19,17 @@ func NewBacketHandler(uc usecase.UseCase) *backetHandler {
 	}
 }
 
+// ResetBucket
+// @Summary Reset the bucket
+// @Description Reset the state of the bucket to its initial state
+// @Tags adminBucket
+// @Accept json
+// @Produce json
+// @Param resetBucket body domain.ResetBucket true "The bucket to reset"
+// @Success 200 {object} Response
+// @Failure 400 {object} Response
+// @Failure 500 {object} Response
+// @Router /api/admins/bucket/ [put]
 func (uc backetHandler) ResetBucket(c echo.Context) error {
 	resetBucket := new(domain.ResetBucket)
 	if err := c.Bind(&resetBucket); err != nil {
