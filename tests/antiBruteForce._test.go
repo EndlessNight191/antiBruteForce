@@ -59,13 +59,15 @@ func TestAuthService(t *testing.T) {
 
     t.Run("bruteforce", func(t *testing.T) {
 		body := `{"ip": "127.0.0.1", "login": "test", "password": "test"}`
-        for i := 0; i < 11; i++ {
+        count := viper.GetInt("MAX_LIMIT_COMMON")
+
+        for i := 0; i <= count; i++ {
             resp, err := http.Post(baseUrl, "application/json", strings.NewReader(body))
             assert.NoError(t, err)
             if i < 10 {
-                assert.Equal(t, true, getOk(resp.Body)) // первые 10 попыток разрешены
+                assert.Equal(t, true, getOk(resp.Body))
             } else {
-                assert.Equal(t, false, getOk(resp.Body)) // 11-я попытка отклонена
+                assert.Equal(t, false, getOk(resp.Body))
             }
         }
     })
