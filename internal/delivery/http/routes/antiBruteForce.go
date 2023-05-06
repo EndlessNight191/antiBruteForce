@@ -11,5 +11,5 @@ import (
 func AntiBrouteForceRoutes(e *echo.Group, uc usecase.UseCase) {
 	h := handler.NewAntiBrouteForceHandler(uc)
 
-	e.POST("/antiBruteForce/", h.AntiBrouteForceCheck)
+	e.POST("/", h.AntiBrouteForceCheck)
 }

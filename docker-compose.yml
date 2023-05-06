@@ -1,31 +1,55 @@
-# version: "3.9"
-
-# services:
-#   app:
-#     image: golang:latest
-#     working_dir: /app
-#     volumes:
-#       - .:/app
-#     command: go run cmd/main.go
-#     ports:
-#       - "8080:8080"
-#     depends_on:
-#       - redis
-
-#   redis:
-#     image: redis:latest
-#     ports:
-#       - "6379:6379"
-
-version: '3'
+version: "3.9"
 
 services:
-  redis:
-    image: redis
-    ports:
-      - "6379:6379"
+  app:
+    image: golang:latest
+    working_dir: /app
+    env_file:
+      - .env
     volumes:
-      - ./redis.conf:/usr/local/etc/redis/redis.conf
-    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+      - .:/app
+    command: go run cmd/main.go
+    ports:
+      - "${PORT}:${PORT}"
+    networks:
+      - monitoring
+
+  redis:
+    image: redis:latest
+    env_file:
+      - .env
+    networks:
+      - monitoring
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+    depends_on:
+      - prometheus
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - monitoring
     environment:
-      - REDIS_PASSWORD=mypassword
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - prometheus_data:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - monitoring    
+
+volumes:
+  grafana_data:
+  prometheus_data:
+
+networks:
+  monitoring:
